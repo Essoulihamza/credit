@@ -1,15 +1,25 @@
 #include <stdio.h>
-int degits( unsigned long long int integer ); //function that return the number of digits in an integer.
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#define BASE 10
+int number_digits( unsigned long long int integer ); //function that return the number of digits in an integer.
+int verification(char* ccn);
 int main(void)
 {
-    //take input from user
-    printf("Enter your credit card number: ");
-    unsigned long long int credit_card_number;
-    scanf("%llu", &credit_card_number); 
+    char CreditCardNumber[17];
+    char *end;
+    //take input from user.
+    do{
+        printf("Enter your credit card number: ");
+        gets(CreditCardNumber);
+    }while( strlen(CreditCardNumber) > 16 || strlen(CreditCardNumber) < 13 || verification(CreditCardNumber) < strlen(CreditCardNumber) );
+    //
+    unsigned long long int credit_card_number = strtoull(CreditCardNumber, &end, BASE);
     int last_digit; //store a digit every loop.
-    int credit_card_number_digits = degits(credit_card_number); // store the number of digits in the credit card number.
+    int credit_card_number_digits = number_digits(credit_card_number); // store the number of digits in the credit card number.
     int digits[credit_card_number_digits];  //an array that store the seperated digits of the credit card number. 
-    int checksum = 0;  //store the sum of digits by a way that we can figure out whether it is a valid credit card or not.
+    int checksum = 0;  //store the sum of digits by a way that we can figure out whether it is a valid credit card or not.    
     for ( int i = 0; i < credit_card_number_digits; i++ ) //select all digits and insert them in an array.
     {
         last_digit = credit_card_number % 10;
@@ -18,7 +28,7 @@ int main(void)
     }
     for( int i = credit_card_number_digits - 2; i >= 0; i-=2 ) // multipy by 2 any other digit starting with the last second one.
     {
-        int mult = degits( (digits[i]*2) );
+        int mult = number_digits( (digits[i]*2) );
         if( mult == 1 )
         {
             checksum += digits[i] * 2;
@@ -47,7 +57,7 @@ int main(void)
     }
     else printf("Invalid credit card number.");
 }
-int degits( unsigned long long int credit_card_number ) //function that get the number of the digits in any integer.
+int number_digits( unsigned long long int credit_card_number ) //function that get the number of the digits in any integer.
 {
     int digits = 0;
     while ( credit_card_number > 0)
@@ -56,4 +66,15 @@ int degits( unsigned long long int credit_card_number ) //function that get the 
         digits++;
     }
     return digits;
+}
+int verification(char* ccn)
+{
+    int lenght = strlen(ccn);
+    int count = 0;
+    for( int i = 0; i < lenght; i++ )
+    {
+        if( isdigit(ccn[i]) != 0 )
+            count++;
+    }
+    return count;
 }
